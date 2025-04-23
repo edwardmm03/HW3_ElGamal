@@ -1,13 +1,29 @@
 import socket
 import threading
 import aes_cipher as aes
+import rsa
 
 
 def handle_client(client_socket):
 
+    messagecount =0
+    data_decrypter = aes.DataDecrypter()
+
+    if messagecount ==0:
+        bitlength = client_socket.recv(1024)
+        data_decrypter.Decrypt(bitlength, "test")
+        length = data_decrypter.GetDecryptedData()
+        #message = data.decode('utf-8')
+        #print(f"Received message: {data}")
+        length = length.decode('utf-8')
+
+        pubkey, privkey = rsa.generate_rsa_keys(int(length))
+        response = "Public Keys " + str(pubkey)
+        client_socket.sendall(response.encode('utf-8'))
+        messagecount += 1
+
     while True:
         #giving key for now
-        data_decrypter = aes.DataDecrypter()
         data = client_socket.recv(1024)
         if not data:
             break
@@ -18,6 +34,7 @@ def handle_client(client_socket):
         message = message.decode('utf-8')
         response = "Server Received your message " + message
         client_socket.sendall(response.encode('utf-8'))
+        messagecount +=1
     client_socket.close()
 
 def main():

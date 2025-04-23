@@ -67,9 +67,8 @@ def generate_rsa_keys(prime_bit_length):
     return public_key, private_key
 
 
-def rsa_encrypt(message, prime_bit_length):
+def rsa_encrypt(message, public_key):
     # generate keys
-    public_key, private_key = generate_rsa_keys(prime_bit_length)
     e, n = public_key
 
     # convert message from string to int.
@@ -78,7 +77,7 @@ def rsa_encrypt(message, prime_bit_length):
 
     # encrypt
     encrypted_string = pow(message_int, e, n)
-    return encrypted_string, public_key, private_key
+    return encrypted_string
 
 
 def rsa_decrypt(encrypted_string, private_key):

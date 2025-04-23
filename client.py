@@ -30,7 +30,13 @@ def main():
     client_socket.sendall(enc_data)
     data = client_socket.recv(1024)
     response = data.decode('utf-8')
+    pubkeys = eval(response)
     print(f"Server response: {response}")
+    ciphertext = rsa.rsa_encrypt(password,pubkeys)
+    print(ciphertext)
+    data_encrypter.Encrypt(str(ciphertext),password)
+    enc_data = data_encrypter.GetEncryptedData()
+    client_socket.sendall(enc_data)
 
     while True:
         message = input("Enter your message: ")

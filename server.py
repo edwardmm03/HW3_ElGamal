@@ -8,6 +8,7 @@ def handle_client(client_socket):
 
     messagecount =0
     data_decrypter = aes.DataDecrypter()
+    password = ""
 
     if messagecount ==0:
         bitlength = client_socket.recv(1024)
@@ -18,16 +19,29 @@ def handle_client(client_socket):
         length = length.decode('utf-8')
 
         pubkey, privkey = rsa.generate_rsa_keys(int(length))
-        response = "Public Keys " + str(pubkey)
+        response = str(pubkey)
         client_socket.sendall(response.encode('utf-8'))
+        print("finished rsa")
         messagecount += 1
 
     while True:
+
+        if messagecount ==1:
+            key = client_socket.recv(1024)
+            data_decrypter.Decrypt(key, "test")
+            data = data_decrypter.GetDecryptedData()
+            #data = length.decode('utf-8')
+
+            password = rsa.rsa_decrypt(int(data),privkey)
+            print(password)
+            print("finished setting password")
+            messagecount += 1
+
         #giving key for now
         data = client_socket.recv(1024)
         if not data:
             break
-        data_decrypter.Decrypt(data, "test")
+        data_decrypter.Decrypt(data, password)
         message = data_decrypter.GetDecryptedData()
         #message = data.decode('utf-8')
         print(f"Received message: {data}")
